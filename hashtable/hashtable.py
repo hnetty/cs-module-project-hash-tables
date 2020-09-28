@@ -11,6 +11,7 @@ class HashTableEntry:
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
+table = [None] * 8
 
 class HashTable:
     """
@@ -19,9 +20,12 @@ class HashTable:
 
     Implement this.
     """
+    
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
+        self.bucket_array = [None for i in range(capacity)]
 
 
     def get_num_slots(self):
@@ -35,6 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return len(self.capacity)
 
 
     def get_load_factor(self):
@@ -43,7 +48,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # Your code here - TUESDAY
 
 
     def fnv1(self, key):
@@ -53,7 +58,7 @@ class HashTable:
         Implement this, and/or DJB2.
         """
 
-        # Your code here
+        # Your code here - FINISHED djb2
 
 
     def djb2(self, key):
@@ -63,6 +68,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
+        byte_array = key.encode('utf-8')
+
+        for byte in byte_array:
+            hash = (( hash * 33) ^ byte) % 0x100000000
+
+        return hash
 
 
     def hash_index(self, key):
@@ -82,6 +94,24 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        key_hash = self.djb2(key)
+        bucket_index = key_hash % self.capacity
+
+        new_node = HashTableEntry(key, value)
+        existing_node = self.bucket_array[bucket_index]
+
+        if existing_node:
+            last_node = None
+            while existing_node:
+                if existing_node.key == key:
+                    existing_node.value = value
+                    return
+                last_node = existing_node
+                existing_node = existing_node.next_node
+
+            last_node.next_node = new_node
+        else:
+            self.bucket_array[bucket_index] = new_node
 
 
     def delete(self, key):
@@ -93,6 +123,20 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        key_hash = self.djb2(key)
+        bucket_index = key_hash % self.capacity
+
+        existing_node = self.bucket_array[bucket_index]
+        if existing_node:
+            last_node = None
+            while existing_node:
+                if existing_node.key == key:
+                    if last_node:
+                        last_node.next_node = existing_node.next_node
+                    else:
+                        self.bucket_array[bucket_index] = existing_node.next_node
+                last_node = existing_node
+                existing_node = existing_node.next_node
 
 
     def get(self, key):
@@ -104,6 +148,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        index = self.hash_index(key)
+        hash_entry = table[index]
+
+        return hash_entry.value
 
 
     def resize(self, new_capacity):
@@ -113,7 +161,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # Your code here - TUESDAY
 
 
 
