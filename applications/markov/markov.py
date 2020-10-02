@@ -30,3 +30,9 @@ def write_sentence():
         next_word = random.choice(following[next_word])
         sentence += f" {next_word}"
     return sentence
+
+
+print(write_sentence())
+print(write_sentence())
+print(write_sentence())
+print(write_sentence())
